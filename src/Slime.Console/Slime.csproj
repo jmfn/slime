@@ -61,6 +61,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Slimer.cs" />
+    <Compile Include="tests\NetworkTests.cs" />
     <Compile Include="tests\SlimeTests.cs" />
   </ItemGroup>
   <ItemGroup>

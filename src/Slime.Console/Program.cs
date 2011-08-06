@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,16 +12,19 @@ namespace Slime {
     class Program {
         private static bool finishedLoading = false;
 
-        static void Main(string[] args) {
+        public static void Main(string[] args) {
             string url;
             bool getSource = false;
             bool getRender = false;
             bool getFullRender = false;
             bool getPageDims = false;
+            bool getNetworkResources = true;
             bool runJavascript = false;
             string javascript = "";
             bool help = false;
-            int verbose = 0;
+            int delay = 0;
+            var dim = new Point(1024, 768);
+
             var p = new OptionSet() {
                                         {"source", v => { getSource = true; }},
                                         {
@@ -29,19 +33,29 @@ namespace Slime {
                                                           getFullRender = false;
                                                       }
                                             },
-                                        {"fullrender", v => {
-                                                           getRender = true;
-                                                           getFullRender = true;
-                                                       }
-                                            },
-                                        {"dims", v => { getPageDims = true; }},
                                         {
-                                            "js", v => {
+                                            "fullrender", v => {
+                                                              getRender = true;
+                                                              getFullRender = true;
+                                                          }
+                                            },
+                                        {"pagedims", v => { getPageDims = true; }},
+                                        {
+                                            "dims=", v => {
+                                                        var d = v.Split('x');
+                                                        if (d.Length != 2) return;
+                                                        dim.X = Convert.ToInt32(d[0]);
+                                                        dim.Y = Convert.ToInt32(d[1]);
+                                                    }
+                                            },
+                                        {
+                                            "js=", v => {
                                                       runJavascript = true;
                                                       javascript = v;
                                                   }
                                             },
-                                        {"v|verbose", v => { ++verbose; }},
+                                        {"network", v => { getNetworkResources = true; }},
+                                        {"delay=", v => { delay = Convert.ToInt32(v.Trim()); }},
                                         {"h|?|help", v => help = v != null},
                                     };
             var extra = p.Parse(args);
@@ -53,16 +67,16 @@ namespace Slime {
                 ShowHelp(p);
                 return;
             }
-
-            var slimer = new Slimer(url, 1024, 768);
+            
+            var slimer = new Slimer(url, dim.X, dim.Y, delay);
 
             if (getSource) {
                 Console.WriteLine(slimer.GetHtml());
             }
 
             if (getPageDims) {
-                var dim = slimer.GetPageDimensions();
-                Console.WriteLine(dim.X + " x " + dim.Y);
+                var d = slimer.GetPageDimensions();
+                Console.WriteLine(d.X + " x " + d.Y);
             }
 
             if (runJavascript) {
@@ -77,6 +91,13 @@ namespace Slime {
                 Process.Start("result.png");
             }
 
+            if (getNetworkResources) {
+                var resources = slimer.GetNetworkResources();
+                foreach (var item in resources) {
+                    Console.WriteLine(item);
+                }
+            }
+
             slimer.Dispose();
         }
 
@@ -85,43 +106,6 @@ namespace Slime {
             Console.WriteLine();
             Console.WriteLine("Options:");
             p.WriteOptionDescriptions(Console.Out);
-        }
-
-        public static void Sandbox(string url) {
-            // Some informative message.
-            Console.WriteLine("Getting a 1024x768 snapshot of " + url + " ...");
-
-            using (WebView webView = WebCore.CreateWebView(1024, 768, true)) {
-                webView.LoadURL(url);
-                webView.LoadCompleted += OnFinishLoading;
-
-                while (!finishedLoading) {
-                    Thread.Sleep(50);
-                    // A Console application does not have a synchronization
-                    // context, thus auto-update won't be enabled on WebCore.
-                    // We need to manually call Update here.
-                    WebCore.Update();
-                }
-
-                // Render to a pixel buffer and save the buffer
-                // to a .png image.
-                webView.Render().SaveToPNG("result.png", true);
-            }
-
-            // Announce.
-            Console.Write("Hit any key to see the result...");
-            Console.ReadKey(true);
-
-            // Start the application associated with .png files
-            // and display the file.
-            Process.Start("result.png");
-
-            // Shut down Awesomium before exiting.
-            WebCore.Shutdown();
-        }
-
-        private static void OnFinishLoading(object sender, EventArgs e) {
-            finishedLoading = true;
         }
     }
 }
