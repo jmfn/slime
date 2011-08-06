@@ -1,0 +1,8 @@
+SLIME
+
+Loads an URL in Chromium and returns various bits after page loads:
+ - Screenshot
+ - HTML
+ - Page load speed
+ - Collection of Comscore Beacons
+
