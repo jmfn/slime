@@ -3,9 +3,9 @@ Slime
 Loads an URL in Chromium and returns various bits after page loads (enabled all by the Awesomium project):
  - Screenshot
  - Page Dimensions
-
+ - Page Source
 
 * 8/6/2011
 
 Added support for listing network resources
-
+Added support View Source
