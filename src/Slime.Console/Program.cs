@@ -18,7 +18,7 @@ namespace Slime {
             bool getRender = false;
             bool getFullRender = false;
             bool getPageDims = false;
-            bool getNetworkResources = true;
+            bool getNetworkResources = false;
             bool runJavascript = false;
             string javascript = "";
             bool help = false;
