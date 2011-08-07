@@ -65,7 +65,7 @@ namespace Slime {
         public string GetHtml() {
             checkForLoading();
 
-            return Browser.PageContents;
+            return Browser.ExecuteJavascriptWithResult("document.documentElement.innerHTML;").ToString();
         }
 
         public Point GetPageDimensions() {
