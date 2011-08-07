@@ -63,6 +63,7 @@
     <Compile Include="Slimer.cs" />
     <Compile Include="tests\NetworkTests.cs" />
     <Compile Include="tests\SlimeTests.cs" />
+    <Compile Include="tests\SourceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\References\avcodec-52.dll">
