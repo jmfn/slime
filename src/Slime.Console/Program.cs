@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -86,9 +87,10 @@ namespace Slime {
             }
 
             if (getRender) {
-                slimer.GetRender(getFullRender).SaveToPNG("result.png", true);
+                var render = slimer.GetRender(getFullRender);
+                render.Save("result.jpg", ImageFormat.Jpeg);
                 Console.WriteLine("Render complete...Loading it for you.");
-                Process.Start("result.png");
+                Process.Start("result.jpg");
             }
 
             if (getNetworkResources) {
