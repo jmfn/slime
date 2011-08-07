@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Threading;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using AwesomiumSharp;
 
 namespace Slime {
@@ -14,6 +17,7 @@ namespace Slime {
         public Point Dimensions { get; private set; }
         public int MillisecondsDelayLoad { get; private set; }
         public bool IsFinishedLoading { get; private set; }
+        public string RenderPath { get; set; }
 
         public Slimer(string url, int width, int height) {
             init(url, width, height, 0);
@@ -27,6 +31,7 @@ namespace Slime {
             Url = url;
             Dimensions = new Point(width, height);
             MillisecondsDelayLoad = millisecondsDelayLoad;
+            RenderPath = "";
             loadPage();
         }
 
@@ -50,7 +55,7 @@ namespace Slime {
             IsFinishedLoading = true;
         }
 
-        public RenderBuffer GetRender(bool useFullPageHeight = false) {
+        public Image GetRender(bool useFullPageHeight = false) {
             checkForLoading();
 
             if (useFullPageHeight) {
@@ -59,7 +64,12 @@ namespace Slime {
                 loadPage(); // reload page with actual page dimensions
             }
 
-            return Browser.Render();
+            var buffer = Browser.Render();
+            var file = Path.Combine(RenderPath, "\\SlimerRender_" + Guid.NewGuid() + ".jpg");
+            buffer.SaveToJPEG(file, 75);
+
+            var image = new Bitmap(file);
+            return image;
         }
 
         public string GetHtml() {

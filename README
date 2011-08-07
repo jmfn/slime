@@ -4,8 +4,10 @@ Loads an URL in Chromium and returns various bits after page loads (enabled all 
  - Screenshot
  - Page Dimensions
  - Page Source
+ - Rest API
 
 * 8/6/2011
 
 Added support for listing network resources
 Added support View Source
+Added Rest API
